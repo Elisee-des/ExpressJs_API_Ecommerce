@@ -8,3 +8,5 @@
 *Middleware on definis
 *Les middleware sont mis apres les routes
 *On crypt le mot de passe
+
+*On cree d'abord un simple controller et apres on ajoute le jsonwebtoken
