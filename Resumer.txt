@@ -1,0 +1,5 @@
+*Creation du index (Le server)
+*Creation database et connection
+*On cree le Model, le Controller, et la route
+
+*On recrit la route, on export,dans index(Le server)
