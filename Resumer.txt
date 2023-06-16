@@ -10,3 +10,5 @@
 *On crypt le mot de passe
 
 *On cree d'abord un simple controller et apres on ajoute le jsonwebtoken
+
+*Et on ajoute un authMiddleware pour les permissions
