@@ -17,6 +17,45 @@ const createUser = asyncHandler(async (req, res) => {
     }
 })
 
+//Edition d'un user
+const updateUser = asyncHandler(async(req, res) => {
+    const {id} = req.params;
+    const user = await User.findById(id);
+    if(!user)
+    {
+        //Creation d'un utilisateur
+        const newUser = await User.create(req.body);
+        res.json(newUser);
+    }
+    else if(user)
+    {
+        //Edition de l'utilisateur
+        try
+        {
+            const editUser = await User.findByIdAndUpdate(
+                id, {
+                    firstname: req?.body.firstname,
+                    lastname:req?.body?.lastname,
+                    email:req?.body?.email,
+                    mobile:req?.body?.mobile,
+            },
+            {
+                new: true
+            }
+            )
+            res.json(editUser);
+        }
+        catch(error)
+        {
+            throw new Error(error)
+        }
+
+    }
+    else{
+        throw new Error("Utilisateur existe déja.")
+    }
+})
+
 //Connexion d'un user
 const loginUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
@@ -75,4 +114,11 @@ const deleteUser = asyncHandler(async(req, res) => {
     }
 })
 
-module.exports = {createUser, loginUser, getAllUsers, getUser, deleteUser}
+module.exports = {
+    createUser, 
+    loginUser, 
+    getAllUsers, 
+    getUser, 
+    deleteUser, 
+    updateUser,
+}
