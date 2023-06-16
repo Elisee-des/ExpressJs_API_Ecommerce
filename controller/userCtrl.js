@@ -2,6 +2,7 @@ const { generateToken } = require("../config/jsonToken");
 const User = require("../models/userModel")
 const asyncHandler = require('express-async-handler');
 const  validateMongodbId = require("../utils/validateMongodbld");
+const { generateRefreshToken } = require("../config/refreshToken");
 
 //Creation d'un user
 const createUser = asyncHandler(async (req, res) => {
@@ -65,6 +66,19 @@ const loginUser = asyncHandler(async (req, res) => {
     const findUser = await User.findOne({email})
     if(findUser && await findUser.isPasswordMatched(password))
     {
+        const refreshToken = await generateRefreshToken(findUser?._id) //Debut de Regenerate.cette ligne viens avec le regenerate Token
+        const updateUser = await User.findByIdAndUpdate(
+            findUser.id,
+            {
+                refreshToken: refreshToken,
+            },
+            {new:true}
+        );
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly:true,
+            maxAge:72*60*60*1000,
+        });                                        //Fin de la partie faisant intervenir le RefreshToken
+
         res.json({
             _id: findUser?._id,
             firstname: findUser?.firstname,
