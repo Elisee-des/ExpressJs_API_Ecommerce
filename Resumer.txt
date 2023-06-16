@@ -12,3 +12,6 @@
 *On cree d'abord un simple controller et apres on ajoute le jsonwebtoken
 
 *Et on ajoute un authMiddleware pour les permissions
+*Apres l'ecriture des methodes, 
+Sauvegarde de base du travail
+*Ensuite on cree un fichier de 
