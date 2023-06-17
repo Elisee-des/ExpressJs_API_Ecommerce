@@ -3,6 +3,7 @@ const User = require("../models/userModel")
 const asyncHandler = require('express-async-handler');
 const  validateMongodbId = require("../utils/validateMongodbld");
 const { generateRefreshToken } = require("../config/refreshToken");
+const jwt = require("jsonwebtoken")
 
 //Creation d'un user
 const createUser = asyncHandler(async (req, res) => {
@@ -18,6 +19,7 @@ const createUser = asyncHandler(async (req, res) => {
         throw new Error("Utilisateur existe déja.")
     }
 })
+
 
 //Edition d'un user
 const updateUser = asyncHandler(async(req, res) => {
@@ -58,6 +60,29 @@ const updateUser = asyncHandler(async(req, res) => {
         throw new Error("Utilisateur existe déja.")
     }
 })
+
+
+// Cette fonction vérifie la présence d'un jeton d'actualisation
+// dans les cookies de la requête, recherche l'utilisateur 
+// correspondant dans la base de données, vérifie la validité
+// du jeton d'actualisation et génère un nouveau jeton d'accès
+// en réponse.
+const handleRefreshToken = asyncHandler(async(req, res) => {
+    const cookie = req.cookies;
+    if(!cookie?.refreshToken) throw new Error("Pas de request token dans les cookies")
+    const refreshToken = cookie.refreshToken;
+    console.log(refreshToken)
+    const user = await User.findOne({refreshToken})
+    if(!user) throw new Error("Pas de rechargement ou rafraichiment du token")
+    jwt.verify(refreshToken, process.env.JWT_TOKEN, (err, decoded) => {
+        if(err || user.id !== decoded.id)
+        {
+            throw new Error("il y a un problème avec le jeton d'actualisation")
+        }
+        const accessToken = generateToken(user?._id);
+        res.json({accessToken});
+    });
+});
 
 //Connexion d'un user
 const loginUser = asyncHandler(async (req, res) => {
@@ -180,5 +205,6 @@ module.exports = {
     deleteUser, 
     updateUser,
     blockUser,
-    unBlockUser
+    unBlockUser,
+    handleRefreshToken
 }

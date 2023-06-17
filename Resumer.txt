@@ -13,5 +13,8 @@
 
 *Et on ajoute un authMiddleware pour les permissions
 *Apres l'ecriture des methodes, 
-Sauvegarde de base du travail
-*Ensuite on cree un fichier de 
+--Sauvegarde de base du travail
+*Ensuite on cree un fichier de validateMongodbId pour Verifier si le id envoyez de la 
+ la base de donner est bien valide
+
+*Et on gere les cookie avec le token
