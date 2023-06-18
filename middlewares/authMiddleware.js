@@ -19,12 +19,13 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
         }
         catch(error)
         {
-            throw new Error("Not authorized token, Please login again")
+            throw new Error("Token non autorisé. Veuillez vous connecter d'abord.")
         }
     }else {
-        throw new Error("THere is not token attached of to hearder")
+        throw new Error("Il n'y a pas de token attacher a ce hearder")
     }
 });
+
 
 const isAdmin = asyncHandler(async(req, res, next) => {
     const {email} = req.user;

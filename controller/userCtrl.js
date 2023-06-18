@@ -3,7 +3,8 @@ const User = require("../models/userModel")
 const asyncHandler = require('express-async-handler');
 const  validateMongodbId = require("../utils/validateMongodbld");
 const { generateRefreshToken } = require("../config/refreshToken");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+
 
 //Creation d'un user
 const createUser = asyncHandler(async (req, res) => {
@@ -18,7 +19,7 @@ const createUser = asyncHandler(async (req, res) => {
     else{
         throw new Error("Utilisateur existe déja.")
     }
-})
+});
 
 
 //Edition d'un user
@@ -59,35 +60,30 @@ const updateUser = asyncHandler(async(req, res) => {
     else{
         throw new Error("Utilisateur existe déja.")
     }
-})
+});
 
 
-// Cette fonction vérifie la présence d'un jeton d'actualisation
-// dans les cookies de la requête, recherche l'utilisateur 
-// correspondant dans la base de données, vérifie la validité
-// du jeton d'actualisation et génère un nouveau jeton d'accès
-// en réponse.
-const handleRefreshToken = asyncHandler(async(req, res) => {
+//Rafraichissement du token d'un connecté
+const handldeRefreshToken = asyncHandler(async(req, res) => {
     const cookie = req.cookies;
-    if(!cookie?.refreshToken) throw new Error("Pas de request token dans les cookies")
+    if(!cookie.refreshToken) throw new Error("Pas de rafraichement de token.")
     const refreshToken = cookie.refreshToken;
-    console.log(refreshToken)
-    const user = await User.findOne({refreshToken})
-    if(!user) throw new Error("Pas de rechargement ou rafraichiment du token")
+    const user = await User.findOne({refreshToken});
+    if(!user) throw new Error("Pas de rafraichissement du token present en db.")
     jwt.verify(refreshToken, process.env.JWT_TOKEN, (err, decoded) => {
-        if(err || user.id !== decoded.id)
-        {
-            throw new Error("il y a un problème avec le jeton d'actualisation")
+        if(err || user.id !== decoded.id){
+            throw new Error("Il ya un probleme avec le rafraichissement du token");
         }
-        const accessToken = generateToken(user?._id);
-        res.json({accessToken});
+        const accessToken = generateToken(user?.id)
+
+        res.json({ accessToken })
     });
 });
 
-//Connexion d'un user
+
 const loginUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
-    //on verifie si l'utilisateur exite
+    //on verifie si l'utilisateur existe
     const findUser = await User.findOne({email})
     if(findUser && await findUser.isPasswordMatched(password))
     {
@@ -118,6 +114,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
+
 //Recuperation de tous les utilisateurs
 const getAllUsers = asyncHandler(async(req, res) => {
     try
@@ -128,6 +125,7 @@ const getAllUsers = asyncHandler(async(req, res) => {
         throw new Error(error);
     }
 })
+
 
 //Recuperation d'un user
 const getUser = asyncHandler(async(req, res) => {
@@ -143,6 +141,7 @@ const getUser = asyncHandler(async(req, res) => {
     }
 })
 
+
 //Supprimer d'un user
 const deleteUser = asyncHandler(async(req, res) => {
     const {id} = req.params;
@@ -157,6 +156,8 @@ const deleteUser = asyncHandler(async(req, res) => {
     }
 })
 
+
+//blocker un utilisateur
 const blockUser = asyncHandler(async(req, res) => {
     const {id} = req.params;
     validateMongodbId(id);
@@ -197,6 +198,7 @@ const unBlockUser = asyncHandler(async(req, res) => {
     }
 });
 
+
 module.exports = {
     createUser, 
     loginUser, 
@@ -206,5 +208,5 @@ module.exports = {
     updateUser,
     blockUser,
     unBlockUser,
-    handleRefreshToken
+    handldeRefreshToken
 }
