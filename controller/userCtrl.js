@@ -95,7 +95,7 @@ const logout = asyncHandler(async(req, res, next) => {
         });
         return res.sendStatus(204);
     }
-   
+
     await User.findOneAndUpdate({ refreshToken }, { $set: { refreshToken: "" } });
         res.clearCookie("refreshToken", {
         httpOnly:true,
