@@ -66,7 +66,7 @@ const updateUser = asyncHandler(async(req, res) => {
 //Rafraichissement du token d'un connecté
 const handldeRefreshToken = asyncHandler(async(req, res) => {
     const cookie = req.cookies;
-    if(!cookie.refreshToken) throw new Error("Pas de rafraichement de token.")
+    if(!cookie?.refreshToken) throw new Error("Pas de rafraichement de token.")
     const refreshToken = cookie.refreshToken;
     const user = await User.findOne({refreshToken});
     if(!user) throw new Error("Pas de rafraichissement du token present en db.")
@@ -81,7 +81,34 @@ const handldeRefreshToken = asyncHandler(async(req, res) => {
 });
 
 
+//Deconnexion d'un utilisateur
+const logout = asyncHandler(async(req, res, next) => {
+    const cookie = req.cookies;
+    if(!cookie?.refreshToken) throw new Error("Pas de rafraichement de token.");
+    const refreshToken = cookie.refreshToken;
+    const user = await User.findOne({refreshToken});
+    if(!user)
+    {
+        res.clearCookie("refreshToken", {
+            httpOnly:true,
+            secure:true
+        });
+        return res.sendStatus(204);
+    }
+   
+    await User.findOneAndUpdate({ refreshToken }, { $set: { refreshToken: "" } });
+        res.clearCookie("refreshToken", {
+        httpOnly:true,
+        secure:true
+    });
+    res.sendStatus(204);
+});
+
+
+//Connection d'un utilisateur
 const loginUser = asyncHandler(async (req, res) => {
+
+
     const {email, password} = req.body;
     //on verifie si l'utilisateur existe
     const findUser = await User.findOne({email})
@@ -208,5 +235,6 @@ module.exports = {
     updateUser,
     blockUser,
     unBlockUser,
-    handldeRefreshToken
+    handldeRefreshToken,
+    logout
 }
