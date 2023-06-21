@@ -19,7 +19,7 @@ const createUser = asyncHandler(async (req, res) => {
     else{
         throw new Error("Utilisateur existe déja.")
     }
-});
+}); 
 
 
 //Edition d'un user
