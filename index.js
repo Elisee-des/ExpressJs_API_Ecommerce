@@ -6,11 +6,13 @@ const PORT = process.env.PORT || 4000;
 const authRouter = require("./routes/authRoute");
 const productRouter = require("./routes/productRoute");
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');                              //Pour gere automatiquement les cookies
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
-
+const morgan = require('morgan');                                           //Pour suivre les activites du server
 
 dbConnect();
+
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:false }));
 app.use(cookieParser());
