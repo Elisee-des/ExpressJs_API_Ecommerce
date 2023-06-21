@@ -43,6 +43,22 @@ const updateProduct = asyncHandler(async(req, res) => {
     }
 });
 
+//delete d'un produit
+const deleteProduct = asyncHandler(async(req, res) => {
+    const productId = req.params.id;
+    try
+    {
+        const deleteProduct = await Product.findByIdAndDelete(productId);
+        if (!deleteProduct) {
+            return res.status(404).json({ message: "Produit non trouvé" });
+          }
+        res.json(deleteProduct);
+    }catch(error)
+    {
+        throw new Error(error);
+    }
+});
+
 
 //Recuperer un produit
 const getaProduct = asyncHandler(async(req, res) => {
@@ -72,4 +88,4 @@ const getAllProduct = asyncHandler(async(req, res) => {
 })
 
 
-module.exports={createProduct, getaProduct, getAllProduct, updateProduct}
+module.exports={createProduct, getaProduct, getAllProduct, updateProduct, deleteProduct}
