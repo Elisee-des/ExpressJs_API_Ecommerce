@@ -1,54 +1,47 @@
-const mongoose = require('mongoose'); // Erase if already required
+const Product = require('../models/productModel')
+const asyncHandler = require('express-async-handler')
 
-// Declare the Schema of the Mongo model
-var productSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        required:true,
-        trim:true
-    },
-    slug:{
-        type:String,
-        required:true,
-        unique:true,
-        lowercase:true
-    },
-    description:{
-        type:String,
-        required:true,
-    },
-    price:{
-        type:Number,
-        required:true,
-    },
-    category: {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Category"
-    },
-    brand: {
-        type:String,
-        enum:["Apple", "Samsung", "Lenovo"]
-    },
-    quantity:Number,
-    sold: {
-        type:Number,
-        default: 0
-    },
-    images: {
-        type:Array
-    },
-    color:{
-        type:String,
-        enum:["Black", "Brown", "Red"]
-    },
-    ratings: [
-        {
-            star:Number,
-            postedby: { type: mongoose.Schema.Types.ObjectId, 
-            ref:"User"}
-        },
-    ],
-}, {timestamps:true});
 
-//Export the model
-module.exports = mongoose.model('Product', productSchema);
+//Creation d'un produit
+const createProduct = asyncHandler(async(req, res) => {
+    try
+    {
+        const newProduct = await Product.create(req.body);
+        res.json({message:"Donnee enregsitrer avec success",
+        data: newProduct})
+    }catch(error)
+    {
+        throw new Error(error);
+    }
+});
+
+
+//Recuperer un produit
+const getaProduct = asyncHandler(async(req, res) => {
+    const { id } = req.params;
+    try
+    {
+        const findProduct = await Product.findById(id);
+        res.json(findProduct);
+    }catch(error)
+    {
+        throw new Error(error);
+    }
+})
+
+
+
+//Recuperer tout les produits
+const getAllProduct = asyncHandler(async(req, res) => {
+    try
+    {
+        const products = await Product.find();
+        res.json(products);
+    }catch(error)
+    {
+        throw new Error(error);
+    }
+})
+
+
+module.exports={createProduct, getaProduct, getAllProduct}
